@@ -1,5 +1,20 @@
 import { UserRepo } from "../infrastructure/user-repo";
 import { UserController } from "../controllers/user.controller";
+import { SessionRepo } from "../infrastructure/session-repo";
+
+test("login succeeds for a valid userID (uint)", async () => {
+  const userController = new UserController(new UserRepo(), new SessionRepo(() => "testSessionKey"));
+  const userID = 1;
+  const sessionKeyOrError = userController.login(userID);
+  expect(sessionKeyOrError).toBe("testSessionKey");
+});
+
+test("login fails for an invalid userID", async () => {
+  const userController = new UserController(new UserRepo());
+  const userID = -1;
+  const sessionKeyOrError = userController.login(userID);
+  expect(sessionKeyOrError).toEqual(Error("Invalid user"));
+});
 
 test("getUserIDFromSession returns the userID when the session is active", async () => {
   const userController = new UserController(new UserRepo());
